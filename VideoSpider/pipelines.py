@@ -68,6 +68,20 @@ class MySQLStorePipeline(object):
 
         table_name = spider.name
 
+        def _is_have(uuid):
+            try:
+                sql = "select uuid from {} where uuid = '{}'".format(table_name, uuid)
+                df_res = pd.read_sql(sql, engine)
+                return True if len(df_res) else False
+            except Exception as error:
+                print(error)
+                return False
+
+        if _is_have(item['uuid']):
+            raise DropItem(
+                '{}: is having uuid! {}, {}'.format(spider.name, item['uuid'], table_name)
+            )
+
         df = pd.DataFrame([item])
         try:
             df.to_sql(table_name, engine, if_exists='append', index=False)

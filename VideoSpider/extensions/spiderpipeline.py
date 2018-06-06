@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from scrapy import signals
-import pandas as pd
-from scrapy.exceptions import DropItem
-from VideoSpider.utils import engine_db
-
-engine = engine_db.mysql_engine
 
 
 # 爬虫开启关闭
@@ -46,23 +41,7 @@ class SpiderOpenCloseLogging(object):
         spider.log('error_count:{}'.format(error_count))
 
     def item_scraped(self, item, spider):
-
-        table_name = spider.name
-
-        def _is_have(uuid):
-            try:
-                sql = "select uuid from {} where uuid = '{}'".format(table_name, uuid)
-                df_res = pd.read_sql(sql, engine)
-                return True if len(df_res) else False
-            except Exception as error:
-                print(error)
-                return False
-
-        if _is_have(item['uuid']):
-            raise DropItem(
-                '{}: is having uuid! {}, {}'.format(spider.name, item['uuid'], table_name)
-            )
-        return item
+        pass
         # self.items_scraped += 1
         # if self.items_scraped % self.item_count == 0:
         #     spider.log("scraped %d items" % self.items_scraped)

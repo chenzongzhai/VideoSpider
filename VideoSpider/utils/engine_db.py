@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 pymysql.install_as_MySQLdb()
 
 
-def get_engine(product=True, db="video"):
+def get_engine(product=True, db="videosite_test"):
     if product:
         engine = create_engine(
             'mysql+mysqldb://{}:{}@{}:{}/{}'.format(
@@ -32,4 +32,4 @@ def get_engine(product=True, db="video"):
         )
     return engine
 
-mysql_engine = get_engine(product=True, db="video")
+mysql_engine = get_engine(product=True, db="videosite_test")

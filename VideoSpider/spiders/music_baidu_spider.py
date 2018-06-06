@@ -131,8 +131,7 @@ class MusicBaiduSpider(BaseRedisSpider):
         # 命令行调试代码
         # from scrapy.shell import inspect_response
         # inspect_response(response, self)
-        sel = Selector(response)
-        div_sel = sel.xpath('//div[@class="mod-song-info"]')
+        div_sel = response.xpath('//div[@class="song-info-box fl"]')
         urls = response.xpath("//a/@href").extract()
 
         for url in urls:
@@ -160,7 +159,7 @@ class MusicBaiduSpider(BaseRedisSpider):
             item['platform'] = div_sel.xpath('//span[@class="songpage-version"]/text()').extract_first()
             item['song_id'] = url.split('/')[-1]
             item['song_url'] = url
-            item['singer'] = div_sel.xpath('//li[contains(., "歌手")]/span[@class="author_list"]/@title').extract_first()
+            item['singer'] = div_sel.xpath('//span[@class="author_list"]/@title').extract_first()
             item['singer_url'] = response.urljoin(
                 div_sel.xpath('//li[contains(., "歌手")]/span[@class="author_list"]/a/@href').extract_first()
             )

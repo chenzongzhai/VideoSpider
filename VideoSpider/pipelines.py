@@ -2,10 +2,7 @@
 
 import traceback
 import pandas as pd
-import VideoSpider.items as items
 from scrapy.exceptions import DropItem
-from VideoSpider.helper.sentence import Sentence
-from VideoSpider.helper.trend_content import get_similarity
 from VideoSpider.utils import engine_db
 
 engine = engine_db.get_engine(product=True)
@@ -59,5 +56,29 @@ class JudgeMatchPipeline(object):
 
 
 class MySQLStorePipeline(object):
+
+    def __init__(self, crawler):
+        self.is_debug = crawler.settings.get("DEBUG", False)
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler)
+
     def process_item(self, item, spider):
+
+        table_name = spider.name
+
+        df = pd.DataFrame([item])
+        try:
+            df.to_sql(table_name, engine, if_exists='append', index=False)
+            print("{}: insert into {} success:{}".format(
+                spider.name, table_name, item['uuid']
+            ))
+        except Exception as e:
+            traceback.print_exc()
+            raise DropItem(
+                '{}: insert to mysql error! {}, {}'.format(spider.name, item, e)
+            )
+
         return item
+

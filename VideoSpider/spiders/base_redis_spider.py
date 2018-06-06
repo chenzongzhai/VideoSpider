@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import hashlib
-import VideoSpider.items as items
 from scrapy_redis.spiders import RedisSpider
-from VideoSpider.helper.task_item import TaskItem
-from VideoSpider.utils.data_convert import get_now_time
+from VideoSpider.utils.time_convert import get_now_time
 
 
 class BaseRedisSpider(RedisSpider):
 
-    redis_url = 'redis://:AAaa1115@58.87.101.142:6379/4'
+    redis_url = 'redis://:pwd@host:port/db'
 
     def __init__(self, *args, **kwargs):
         super(BaseRedisSpider, self).__init__(*args, **kwargs)

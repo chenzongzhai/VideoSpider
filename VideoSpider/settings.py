@@ -50,7 +50,7 @@ DOWNLOADER_MIDDLEWARES = {
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
 EXTENSIONS = {
     'scrapy.extensions.telnet.TelnetConsole': None,
-    'VideoSpider.extensions.SpiderOpenCloseLogging': 200,
+    'VideoSpider.extensions.spiderpipeline.SpiderOpenCloseLogging': 200,
 }
 
 # Configure item pipelines
@@ -59,6 +59,26 @@ ITEM_PIPELINES = {
     'VideoSpider.pipelines.JudgeMatchPipeline': 100,
     'VideoSpider.pipelines.MySQLStorePipeline': 300,
 }
+
+TEST_MYSQL_HOST = '127.0.0.1'
+TEST_MYSQL_USER = 'chen'
+TEST_MYSQL_PASSWD = '1990'
+TEST_MYSQL_PORT = 3306
+TEST_MYSQL_DB = ''
+
+MYSQL_HOST = '127.0.0.1'
+MYSQL_USER = 'user'
+MYSQL_PASSWD = 'pwd'
+MYSQL_PORT = 3306
+MYSQL_DB = ''
+
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+REDIS_DB = 4
+REDIS_PWD = 'pwd'
+
+# redis设置
+REDIS_URL = 'redis://:pwd@host:port/db'
 
 # 几个防止被Ban的策略设置
 # DOWNLOAD_TIMEOUT = 20

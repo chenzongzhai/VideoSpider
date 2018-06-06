@@ -2,11 +2,9 @@
 
 import re
 import json
-import hashlib
 import requests
 from scrapy import Request
-from scrapy.selector import Selector
-from VideoSpider.helper.check_url_in import check_uuid
+# from scrapy.selector import Selector
 from VideoSpider.items import MusicItem
 from VideoSpider.spiders.base_redis_spider import BaseRedisSpider
 
@@ -27,8 +25,8 @@ class MusicQQSpider(BaseRedisSpider):
         "SCHEDULER_QUEUE_KEY": "VideoSpider:{}:requests".format(name),
     }
 
-    def __init__(self, scrapy_task_id=None, *args, **kwargs):
-        super(MusicQQSpider, self).__init__(scrapy_task_id, *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(MusicQQSpider, self).__init__(*args, **kwargs)
         self.singer_list = 'https://c.y.qq.com/v8/fcg-bin/v8.fcg?channel=singer' \
                            '&page=list&key=all_all_all&pagesize=100&pagenum={}&format=jsonp'
         self.song_list = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg?' \
@@ -48,6 +46,17 @@ class MusicQQSpider(BaseRedisSpider):
         if req_dict.get('message', '') != "succ":
             self.log('error for {}'.format(url))
         return req_dict.get('data', {})
+
+    # def start_requests(self):
+    #
+    #     url = self.singer_list.format(1)
+    #     return [Request(
+    #         url=url,
+    #         callback=self.parse,
+    #         headers={
+    #             "Referer": "https://y.qq.com/portal/singer_list.html",
+    #         }
+    #     )]
 
     def parse(self, response):
         url = response.url
@@ -160,10 +169,6 @@ class MusicQQSpider(BaseRedisSpider):
                     "Referer": song_url,
                 }
             )
-            uuid = hashlib.md5(song_url.encode('utf8')).hexdigest()
-            if check_uuid(uuid, self.name):
-                self.log('having song {}'.format(song_url))
-                return
             item = MusicItem()
             item['song'] = music_data.get('songname')
             # item['platform'] = _get_singer(div_sel.xpath('//div[@class="data__singer"]'))
@@ -179,79 +184,5 @@ class MusicQQSpider(BaseRedisSpider):
             # item['referer'] = response.request.headers.get('Referer')
             item['raw_html'] = json.dumps(song_dict)
             item['source_id'] = self.source_id
-            self.build_other_item_info(item, self.source)
+            self.build_other_item_info(item)
             return item
-
-    def parse_song(self, response, sid):
-
-        headers = {
-            'Host': 'c.y.qq.com',
-            'Referer': response.url,
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:55.0) Gecko/20100101 Firefox/55.0'
-        }
-
-        def _get_pubdate(body):
-
-            m = re.search(r'"albummid"\s?:\s?"(\w+)"', body, re.S)
-            if m:
-                album_id = m.group(1)
-
-                if album_id:
-                    album_url = self.album_url.format(album_id)
-                    self.log('get pubdate {}'.format(album_url))
-                    req = requests.get(album_url, headers=headers, timeout=20)
-                    if req.status_code == 200:
-                        content_dict = json.loads(req.text)
-                        adate = content_dict.get('data', {}).get('aDate')
-                        if adate != '0000-00-00':
-                            return adate
-
-        def _get_content(song_id):
-
-            if song_id:
-                desc_url = self.desc_url.format(song_id)
-                self.log('get lyric {}'.format(desc_url))
-                req = requests.get(desc_url, headers=headers, timeout=20)
-                if req.status_code == 200:
-                    content_html = req.text
-                    m = re.search('back\(({.*})\)', content_html, re.S)
-                    if m:
-                        content_json = m.group(1)
-                        content_dict = json.loads(content_json)
-                        return content_dict.get('lyric')
-
-        def _get_singer(soup):
-            singer = []
-            list_a = soup.xpath("a/@title")
-            for a in list_a:
-                singer.append(a.extract())
-            return ' / '.join(singer)
-
-        self.log("parse_item:" + response.url)
-        sel = Selector(response)
-        div_sel = sel.xpath('//div[@class="data__cont"]')
-
-        if div_sel:
-            url = response.url
-            item = MusicItem()
-            item['song'] = div_sel.xpath('//h1[@class="data__name_txt"]/@title').extract_first()
-            # item['platform'] = _get_singer(div_sel.xpath('//div[@class="data__singer"]'))
-            item['song_id'] = sid
-            item['song_url'] = url
-            item['singer'] = _get_singer(div_sel.xpath('//div[@class="data__singer"]'))
-            item['singer_url'] = response.urljoin(
-                div_sel.xpath('//div[@class="data__singer"]/a/@href').extract_first()
-            )
-            album = div_sel.xpath('//li[contains(., "专辑")]/a[@class="js_album"]/@title').extract_first()
-            item['album'] = album.strip() if album else None
-            # item['write_words'] = div_sel.xpath('//em[@class="f-ff2"]/text()')
-            # item['song_composition'] = div_sel.xpath('//em[@class="f-ff2"]/text()')
-            item['content'] = _get_content(sid)
-            item['pubdate'] = _get_pubdate(response.text)
-            item['referer'] = response.request.headers.get('Referer')
-            item['raw_html'] = div_sel.extract_first()
-            item['source_id'] = self.source_id
-            self.build_other_item_info(item, self.source)
-            yield item
-        else:
-            self.log('error for url: {}'.format(response.url))

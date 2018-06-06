@@ -2,7 +2,6 @@
 
 import re
 from scrapy import Request
-from scrapy.selector import Selector
 from VideoSpider.items import MusicItem
 from VideoSpider.spiders.base_redis_spider import BaseRedisSpider
 
@@ -34,7 +33,7 @@ class Music163Spider(BaseRedisSpider):
         self.log(response.url)
         urls = response.xpath("//a/@href").extract()
         for url in urls:
-            if not url or type(url) != str:
+            if not isinstance(url, str):
                 continue
             url = response.urljoin(url)
             if re.search(r'https?://music\.163\.com/song\?id=\d+$', url, re.S):
@@ -71,8 +70,7 @@ class Music163Spider(BaseRedisSpider):
                 return ""
 
         self.log("parse_item:" + response.url)
-        sel = Selector(response)
-        div_sel = sel.xpath('//div[@class="cnt"]')
+        div_sel = response.xpath('//div[@class="cnt"]')
         urls = response.xpath("//a/@href").extract()
 
         for url in urls:
@@ -95,7 +93,7 @@ class Music163Spider(BaseRedisSpider):
 
         if div_sel:
             item = MusicItem()
-            item['song'] = _get_song(sel)
+            item['song'] = _get_song(response)
             item['song_id'] = div_sel.xpath('//div[@id="lyric-content"]/@data-song-id').extract_first()
             item['song_url'] = response.url
             item['singer'] = div_sel.xpath("//p[contains(., '歌手')]/span/@title").extract_first()
@@ -108,7 +106,7 @@ class Music163Spider(BaseRedisSpider):
             item['referer'] = response.request.headers.get('Referer')
             item['raw_html'] = div_sel.extract_first()
             item['source_id'] = self.source_id
-            self.build_other_item_info(item, self.source)
+            self.build_other_item_info(item)
             yield item
         else:
             self.log('error for url: {}'.format(response.url))

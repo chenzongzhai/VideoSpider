@@ -15,7 +15,7 @@ def get_engine(product=True, db="video"):
                 config.MYSQL_PASSWD,
                 config.MYSQL_HOST,
                 config.MYSQL_PORT,
-                config.MYSQL_DB
+                db
             ),
             connect_args={'charset': 'utf8'}
         )
@@ -26,8 +26,10 @@ def get_engine(product=True, db="video"):
                 config.TEST_MYSQL_PASSWD,
                 config.TEST_MYSQL_HOST,
                 config.TEST_MYSQL_PORT,
-                config.TEST_MYSQL_DB
+                db
             ),
             connect_args={'charset': 'utf8'}
         )
     return engine
+
+mysql_engine = get_engine(product=True, db="video")

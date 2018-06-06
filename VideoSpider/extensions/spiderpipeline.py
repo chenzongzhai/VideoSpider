@@ -5,7 +5,7 @@ import pandas as pd
 from scrapy.exceptions import DropItem
 from VideoSpider.utils import engine_db
 
-engine = engine_db.get_engine(product=True)
+engine = engine_db.mysql_engine
 
 
 # 爬虫开启关闭

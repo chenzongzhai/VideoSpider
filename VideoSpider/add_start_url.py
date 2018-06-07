@@ -5,6 +5,10 @@ import redis
 import settings
 from apscheduler.schedulers.blocking import BlockingScheduler
 
+"""
+    scrapy_redis分布式爬取需手动添加start_url 到redis
+"""
+
 rd = redis.Redis(
     host=settings.REDIS_HOST,
     port=settings.REDIS_PORT,

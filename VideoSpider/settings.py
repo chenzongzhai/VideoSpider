@@ -60,6 +60,7 @@ ITEM_PIPELINES = {
     'VideoSpider.pipelines.MySQLStorePipeline': 300,
 }
 
+# mysql redis 设置
 TEST_MYSQL_HOST = '127.0.0.1'
 TEST_MYSQL_USER = 'user'
 TEST_MYSQL_PASSWD = 'pwd'
@@ -91,9 +92,13 @@ COOKIES_ENABLED = False
 
 # COOKIES_DEBUG = True
 
+# 微博用户密码,用于自动登录
 USER_WEIBO = {}
+
+#
 PRODUCT_HOSTS = []
 
+# 可用的请求头 user-agent
 USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 "
     "(KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1",

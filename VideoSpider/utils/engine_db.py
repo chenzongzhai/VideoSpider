@@ -32,4 +32,5 @@ def get_engine(product=True, db="videosite_test"):
         )
     return engine
 
+# mysql engine
 mysql_engine = get_engine(product=True, db="videosite_test")

@@ -52,6 +52,7 @@ class Music163Spider(BaseRedisSpider):
 
     def parse_item(self, response):
 
+        # 发布时间
         def _get_pubdate(body):
             m = re.search(r'"pubDate": "(\d{4}-\d{2}-\d{2})T', body, re.S)
             if m:
@@ -59,6 +60,7 @@ class Music163Spider(BaseRedisSpider):
                 if pubdate != "0000-00-00":
                     return pubdate
 
+        # 歌词
         def _get_song(soup):
             name = soup.xpath('//em[@class="f-ff2"]/text()').extract_first()
             name_cn = soup.xpath('//div[@class="subtit f-fs1 f-ff2"]/text()').extract_first()

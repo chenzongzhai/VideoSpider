@@ -2,7 +2,7 @@
 
 import re
 from scrapy import Request
-from scrapy.selector import Selector
+# from scrapy.selector import Selector
 from VideoSpider.items import MusicItem
 from VideoSpider.spiders.base_redis_spider import BaseRedisSpider
 
@@ -63,6 +63,7 @@ class MusicBaiduSpider(BaseRedisSpider):
                     dont_filter=True,
                 )
 
+        # 判断是否有下一页
         next_tags = response.xpath(
             '//div[contains(@class, "page-navigator-hook page-navigator")]'
         )
@@ -99,6 +100,7 @@ class MusicBaiduSpider(BaseRedisSpider):
         albums_comp = re.compile(r'href=\\"(\\/album\\/\d+\\)"', re.S)
         song_list = re.findall(songs_comp, body)
         album_list = re.findall(albums_comp, body)
+        # 歌曲列表
         for song in song_list:
             if song:
                 song_url = 'http://music.baidu.com' + song[0].replace('\\', '')
@@ -108,6 +110,7 @@ class MusicBaiduSpider(BaseRedisSpider):
                     priority=100,
                 )
 
+        # 专辑列表
         for album in album_list:
             if album:
                 album_url = 'http://music.baidu.com' + album.replace('\\', '')
@@ -134,8 +137,9 @@ class MusicBaiduSpider(BaseRedisSpider):
         div_sel = response.xpath('//div[@class="song-info-box fl"]')
         urls = response.xpath("//a/@href").extract()
 
+        # 歌曲或专辑链接
         for url in urls:
-            if not url or type(url) != str:
+            if not isinstance(url, str):
                 continue
             url = response.urljoin(url)
             if re.search(r'https?://music\.baidu\.com/song/(s/)?\w+$', url, re.S):

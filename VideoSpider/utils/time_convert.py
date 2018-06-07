@@ -3,8 +3,11 @@
 import time
 import datetime
 
+"""
+    时间规整化
+"""
 
-# 规整化发表时间
+
 def regularization_time(publish_time):
     if isinstance(publish_time, int) or publish_time.isdigit():
         publish_time = int(publish_time)

@@ -57,6 +57,10 @@ class JudgeMatchPipeline(object):
 
 class MySQLStorePipeline(object):
 
+    """
+    爬取结果入库
+    """
+
     def __init__(self, crawler):
         self.is_debug = crawler.settings.get("DEBUG", False)
 

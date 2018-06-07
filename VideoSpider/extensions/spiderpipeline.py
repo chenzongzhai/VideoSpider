@@ -2,8 +2,11 @@
 
 from scrapy import signals
 
+"""
+    爬虫扩展,可记录爬虫运行状态等
+"""
 
-# 爬虫开启关闭
+
 class SpiderOpenCloseLogging(object):
 
     def __init__(self, item_count):

@@ -9,7 +9,7 @@ from VideoSpider.items import MusicItem
 from VideoSpider.spiders.base_redis_spider import BaseRedisSpider
 
 """
-请求数据均为json, 抓包分析
+    抓包分析,请求数据均为json
 """
 
 
@@ -41,6 +41,7 @@ class MusicQQSpider(BaseRedisSpider):
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:55.0) Gecko/20100101 Firefox/55.0'
         }
 
+    # 检查是否请求成功
     def _check_json(self, body, url):
         req_dict = json.loads(body)
         if req_dict.get('message', '') != "succ":
@@ -80,6 +81,7 @@ class MusicQQSpider(BaseRedisSpider):
                     # dont_filter=True,
                 )
 
+        # 计算出总页数, 请求所有页
         if 'pagenum=1&' in url:
             total_page = res_json.get('total_page', 2)
             for page in range(2, total_page):
@@ -94,6 +96,7 @@ class MusicQQSpider(BaseRedisSpider):
                     # dont_filter=True,
                 )
 
+    # 歌曲列表页
     def parse_song_list(self, response):
         url = response.url
         self.log(url)
@@ -123,6 +126,7 @@ class MusicQQSpider(BaseRedisSpider):
 
     def song_items(self, song_dict):
 
+        # 发表时间
         def _get_pubdate(albummid):
 
             if albummid:
@@ -135,6 +139,7 @@ class MusicQQSpider(BaseRedisSpider):
                     if adate != '0000-00-00':
                         return adate
 
+        # 歌词
         def _get_content(song_id):
 
             if song_id:
@@ -149,6 +154,7 @@ class MusicQQSpider(BaseRedisSpider):
                         content_dict = json.loads(content_json)
                         return content_dict.get('lyric')
 
+        # 歌手
         def _get_singer(singer_list):
             singer_name, singer_url = [], None
             if len(singer_list) > 0:

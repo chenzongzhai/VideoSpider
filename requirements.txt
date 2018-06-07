@@ -1,0 +1,9 @@
+pandas==0.21.0
+scrapy_redis==0.6.8
+requests==2.6.0
+APScheduler==3.4.0
+redis==2.10.6
+PyMySQL==0.7.11
+SQLAlchemy==1.1.15
+Scrapy==1.4.0
+w3lib==1.17.0

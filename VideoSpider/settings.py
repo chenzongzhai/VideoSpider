@@ -15,12 +15,6 @@ BOT_NAME = 'VideoSpider'
 SPIDER_MODULES = ['VideoSpider.spiders']
 NEWSPIDER_MODULE = 'VideoSpider.spiders'
 
-# scrapy-splash
-# SPLASH_URL = 'http://127.0.0.1:8050'  # "http://118.89.186.217:8051" #
-# DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
-# HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
-# SPLASH_COOKIES_DEBUG = True
-
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = 'VideoSpider (+http://www.yourdomain.com)'
 
